@@ -108,6 +108,29 @@ OUTPUT_DIR="out_${DATA_SOURCE}"
 mkdir -p "$OUTPUT_DIR"
 echo "Checked for the output dirs"
 
+
 # Set the folder name from the directory name
 FOLDER_NAME="${INPUT_DIR##*/}"
 echo "Set the folder name: $FOLDER_NAME"
+
+
+# Find the 'cl_*' file within the input directory
+SST_FILES=$(find "$INPUT_DIR" -type f -name "cl_*")
+if [ $(echo $SST_FILES | wc -w) -gt 1 ]; then
+    echo "Error: Multiple 'cl_*' files found, specify which one to use."
+    exit 1
+fi
+SST_FILE=$SST_FILES
+echo "cl_ file located: $SST_FILE"
+
+echo "Running PRScs"
+
+# Run the Python script with the provided parameters
+python3 /wynton/scratch/BMI206_NIC/tools/${METHOD}/${METHOD}.py \
+    --ref_dir=/wynton/scratch/BMI206_NIC/ref_datasets/1KG_datasets \
+    --bim_prefix=/wynton/scratch/BMI206_NIC/naracGenos-gaw16raw \
+    --sst_file=/wynton/scratch/BMI206_NIC/${SST_FILE} \
+    --n_gwas=1000 \
+    --phi=1e-2 \
+    --out_dir=/wynton/scratch/BMI206_NIC/output_${DATA_SOURCE}
+
